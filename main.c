@@ -41,16 +41,16 @@ void affichage(char grille[LIGNES][COLONNES]){
     }
 }   
 
-void posCoord(int posY, char coord, char grille[LIGNES][COLONNES]){
+void posCoord(int inputUser, char coord, char grille[LIGNES][COLONNES]){
     int cpt=0;
     for(int x = 0; x<LIGNES;x++){
-        for(int y = 0; y<posY+1;y++){
-            if(x==LIGNES-1 && y ==posY-1){
+        for(int y = 0; y<inputUser+1;y++){
+            if(x==LIGNES-1 && y ==inputUser-1){
                 if(grille[x][y]!='.'){
                     while(grille[x-cpt][y]!='.')
                     {
                         if(cpt<LIGNES)
-                        cpt++;
+                            cpt++;
                         else{
                             printf("La colonne est complète\n");
                             break;
@@ -97,25 +97,37 @@ int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
             cpt_lig+=cptSymbole(position, tab[lig][col+1]);}
             if(position==SYMB_P1 || position == SYMB_P2){
                 int cpt=1;
+                int count_diag_dr=1;
+                int count_diag_ga=1;
                 while (tab[lig-cpt][col]==SYMB_P1||tab[lig-cpt][col]==SYMB_P2){
-
                     cpt_col+= cptSymbole(position,tab[lig-cpt][col]);
                     cpt++;//}
                 }
-                if(typePartie == 3 && cpt_col==PUISSANCES-1){
-                    tab[lig-cpt][col]=SYMB_P2;
+
+                while(tab[lig-count_diag_dr][col+count_diag_dr]==SYMB_P1 || tab[lig-count_diag_dr][col+count_diag_dr]==SYMB_P2){
+                    cpt_diag_dr+= cptSymbole(position,tab[lig-count_diag_dr][col+count_diag_dr]);
+                    count_diag_dr++;
                 }
-/*                while(tab[lig-1][col+1]==SYMB_P1 || tab[lig-1][col+1]==SYMB_P2){ check de la diagonal !!!!! boucle infinie
-                    cpt_diag_dr+= cptSymbole(position,tab[lig-1][col+1]);
-                }*/
+
+                while(tab[lig-count_diag_ga][col-count_diag_ga]==SYMB_P1 || tab[lig-count_diag_ga][col-count_diag_ga]==SYMB_P2){
+                    cpt_diag_ga+= cptSymbole(position,tab[lig-count_diag_ga][col-count_diag_ga]);
+                    count_diag_ga++;
+                }
             }
-            //printf("lig n°%d, col n°%d: actu = %c et next_lig=%c, next_col = %c/// cpt_lig=%d cpt_col=%d\n",lig, col, position, tab[lig][col+1],tab[lig-1][col],cpt_lig,cpt_col);
             if(cpt_lig==PUISSANCES||cpt_col==PUISSANCES||cpt_diag_dr==PUISSANCES||cpt_diag_ga==PUISSANCES){
                 return 1;
             }
+
+            /*                if(typePartie == 3 && cpt_col==PUISSANCES-1){
+                    tab[lig-cpt][col]=SYMB_P2;
+                }*/
+
             if(typePartie == 3 && cpt_lig==PUISSANCES-1){
                 tab[lig][col+1]=SYMB_P2;
-            }cpt_col=1;
+            }
+            cpt_col=1;
+            cpt_diag_dr=1;
+            cpt_diag_ga=1;
         }
         cpt_lig=0;
         cpt_col=0;
@@ -141,16 +153,16 @@ int winner(char numJoueur, int win){
 }
 
 void gameStart_P2P(char tab[LIGNES][COLONNES]){
-    int posY;
+    int inputUser;
     while(checkIfWin(tab,1)==0){
         affichage(tab);
-        scanf("%d", &posY);
-        posCoord(posY, 'X',tab);
+        scanf("%d", &inputUser);
+        posCoord(inputUser, 'X',tab);
         if (winner('1', checkIfWin(tab,1))== 1)
             break;
         printf("Dans quelle colonne souhaitez vous jouer player 2?\n");
-        scanf("%d", &posY);
-        posCoord(posY, 'O',tab);
+        scanf("%d", &inputUser);
+        posCoord(inputUser, 'O',tab);
         if (winner('2', checkIfWin(tab,1))== 1)
             break;
         printf("Dans quelle colonne souhaitez vous jouer player 1?\n");
@@ -158,13 +170,13 @@ void gameStart_P2P(char tab[LIGNES][COLONNES]){
 }
 
 void gameStart_PvC_v1(char tab[LIGNES][COLONNES]){
-    int posY;
+    int inputUser;
     srand(time(0));// initialisation de la graine avec l'identifiant du processus
 
     while(checkIfWin(tab,2)==0){
         affichage(tab);
-        scanf("%d", &posY);
-        posCoord(posY, SYMB_P1,tab);
+        scanf("%d", &inputUser);
+        posCoord(inputUser, SYMB_P1,tab);
         if (winner('1', checkIfWin(tab,2))== 1)
             break;
         printf("Au tour de l'ordinateur...\n");
@@ -177,13 +189,13 @@ void gameStart_PvC_v1(char tab[LIGNES][COLONNES]){
 }
 
 void gameStart_PvC_v2(char tab[LIGNES][COLONNES]){
-    int posY;
+    int inputUser;
     srand(time(0));// initialisation de la graine avec l'identifiant du processus
 
     while(checkIfWin(tab,3)==0){
         affichage(tab);
-        scanf("%d", &posY);
-        posCoord(posY, SYMB_P1,tab);
+        scanf("%d", &inputUser);
+        posCoord(inputUser, SYMB_P1,tab);
         if (winner('1', checkIfWin(tab,3))== 1){
             break;
         }
