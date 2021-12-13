@@ -72,16 +72,22 @@ void posCoord(int inputUser, char coord, char grille[LIGNES][COLONNES]){
 
 int cptSymbole(char posActu, char next){
     int cpt = 0;
-    //char symbole = tab[LIGNES][COLONNES];
-    if(/*symbole*/posActu == SYMB_P1 || posActu == SYMB_P2){
-        if(/*symbole*/posActu == next){
+    if(posActu == SYMB_P1 || posActu == SYMB_P2){
+        if(posActu == next){
             cpt++;
         }
     }
     return cpt;
 }
 
-//tab[lig-1][col-1];
+int cptSymbole_IA(int typePartie, int cpt, char tab[LIGNES][COLONNES], char next, int lig, int col){
+    if (typePartie == 3 && cpt == PUISSANCES - 1) {
+        tab[lig][col] = next;
+        return 1;
+    }
+    return 0;
+}
+
 int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
     int cpt_lig=1;
     int cpt_col=1;
@@ -94,21 +100,20 @@ int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
                 cpt_lig=1;
             }
             else{
-            cpt_lig+=cptSymbole(position, tab[lig][col+1]);}
+                cpt_lig+=cptSymbole(position, tab[lig][col+1]);}
             if(position==SYMB_P1 || position == SYMB_P2){
                 int cpt=1;
                 int count_diag_dr=1;
                 int count_diag_ga=1;
                 while (tab[lig-cpt][col]==SYMB_P1||tab[lig-cpt][col]==SYMB_P2){
                     cpt_col+= cptSymbole(position,tab[lig-cpt][col]);
-                    cpt++;//}
+                    cpt++;
                 }
 
                 while(tab[lig-count_diag_dr][col+count_diag_dr]==SYMB_P1 || tab[lig-count_diag_dr][col+count_diag_dr]==SYMB_P2){
                     cpt_diag_dr+= cptSymbole(position,tab[lig-count_diag_dr][col+count_diag_dr]);
                     count_diag_dr++;
                 }
-
                 while(tab[lig-count_diag_ga][col-count_diag_ga]==SYMB_P1 || tab[lig-count_diag_ga][col-count_diag_ga]==SYMB_P2){
                     cpt_diag_ga+= cptSymbole(position,tab[lig-count_diag_ga][col-count_diag_ga]);
                     count_diag_ga++;
@@ -117,11 +122,9 @@ int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
             if(cpt_lig==PUISSANCES||cpt_col==PUISSANCES||cpt_diag_dr==PUISSANCES||cpt_diag_ga==PUISSANCES){
                 return 1;
             }
-
-            /*                if(typePartie == 3 && cpt_col==PUISSANCES-1){
-                    tab[lig-cpt][col]=SYMB_P2;
-                }*/
-
+            if(cptSymbole_IA(3,cpt_col,tab,SYMB_P2,lig-PUISSANCES+1,col)==1){
+                return 2;
+            }
             if(typePartie == 3 && cpt_lig==PUISSANCES-1){
                 tab[lig][col+1]=SYMB_P2;
             }
@@ -192,7 +195,7 @@ void gameStart_PvC_v2(char tab[LIGNES][COLONNES]){
     int inputUser;
     srand(time(0));// initialisation de la graine avec l'identifiant du processus
 
-    while(checkIfWin(tab,3)==0){
+    while(checkIfWin(tab,3)==0||checkIfWin(tab,3)==2){
         affichage(tab);
         scanf("%d", &inputUser);
         posCoord(inputUser, SYMB_P1,tab);
@@ -200,10 +203,14 @@ void gameStart_PvC_v2(char tab[LIGNES][COLONNES]){
             break;
         }
         printf("Au tour de l'ordinateur...\n");
-        int cpRandom = rand() % (COLONNES + 1); // nombre aleatoire de 0..upperBound
-        posCoord(cpRandom,SYMB_P2,tab);
-        if (winner('2', checkIfWin(tab,3))== 1){
+        if (checkIfWin(tab,3)==0){
+            int cpRandom = rand() % (COLONNES + 1); // nombre aleatoire de 0..upperBound
+            posCoord(cpRandom,SYMB_P2,tab);
+        }
+        else if (checkIfWin(tab,3)== 1){
             break;
+        } else if (checkIfWin(tab,3)==2){
+            printf("blocage de jeu\n");
         }
         printf("Dans quelle colonne souhaitez vous jouer player 1?\n");
     }
