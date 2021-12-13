@@ -122,11 +122,11 @@ int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
             if(cpt_lig==PUISSANCES||cpt_col==PUISSANCES||cpt_diag_dr==PUISSANCES||cpt_diag_ga==PUISSANCES){
                 return 1;
             }
-            if(cptSymbole_IA(3,cpt_col,tab,SYMB_P2,lig-PUISSANCES+1,col)==1){
+            if(cptSymbole_IA(3,cpt_lig,tab,SYMB_P2,lig,col+PUISSANCES-1)==1){
                 return 2;
             }
-            if(typePartie == 3 && cpt_lig==PUISSANCES-1){
-                tab[lig][col+1]=SYMB_P2;
+            if(cptSymbole_IA(3,cpt_col,tab,SYMB_P2,lig-PUISSANCES+1,col)==1){
+                return 2;
             }
             cpt_col=1;
             cpt_diag_dr=1;
