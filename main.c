@@ -16,7 +16,7 @@ const char SYMB_P2 = 'O';
 void creerGrille(char cara, char tabMorp[LIGNES][COLONNES]){
     int i, j;
     char numCol='1';
-    for (i=0; i < LIGNES; i++)
+    for (i=0; i < LIGNES; i++)//parcours du tableau 2 dimensions
     {
         for (j=0; j < COLONNES; j++)
             {
@@ -35,7 +35,7 @@ for(int lig=0;lig<1;lig++){
 /// \param grille tableau 2 dimensions
 void affichage(char grille[LIGNES][COLONNES]){
     int i, j;
-    for (i=0; i<LIGNES; i++)
+    for (i=0; i<LIGNES; i++)//parcours du tableau 2 dimensions
     {
         for (j=0; j<COLONNES; j++)
             putchar(grille[i][j]);
@@ -43,16 +43,16 @@ void affichage(char grille[LIGNES][COLONNES]){
     }
 }
 
-/// @brief permet de 'poser' sur la grille un caractere en fonction du joueur
+/// @brief permet de 'poser' sur la grille un caractere en fonction du joueur en prenant compte si la case est vide
 /// \param inputUser = position du caractere avec le n°de colonne
 /// \param coord = symbole du joueur
 /// \param grille = tableau 2 dimensions
 void posCoord(int inputUser, char coord, char grille[LIGNES][COLONNES]){
     int cpt=0;
-    for(int x = 0; x<LIGNES;x++){
+    for(int x = 0; x<LIGNES;x++){//parcours du tableau 2 dimensions
         for(int y = 0; y<inputUser+1;y++){
             if(x==LIGNES-1 && y ==inputUser-1){
-                if(grille[x][y]!='.'){
+                if(grille[x][y]!='.'){//si la case sur l'emplacement est différente d'une case vide alors tant que la case la plus inférieur est vide on pose un symbole
                     while(grille[x-cpt][y]!='.')
                     {
                         if(cpt<LIGNES)
@@ -115,45 +115,44 @@ int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
     int cpt_col=1;
     int cpt_diag_dr=1;
     int cpt_diag_ga=1;
-    for(int lig = LIGNES-1; lig>=0;lig--){
+    for(int lig = LIGNES-1; lig>=0;lig--){//parcours du tableau 2 dimensions en partant de la dernière ligne
         for(int col = 0; col<=COLONNES-1;col++){
-            char position=tab[lig][col];
-            if(cptSymbole(position,tab[lig][col+1])==0){
+            char position=tab[lig][col];//symbole sur la position actuelle dans le parcours du tableau
+            if(cptSymbole(position,tab[lig][col+1])==0){//si la fct de cpt des symboles retourne 0 alors le symbole suivant est différent et le cpt de la ligne reste à 1
                 cpt_lig=1;
             }
-            else{
+            else{//sinon on incrémente le compteur symbole consécutifs sur la ligne en fonction du nombre de symbole comptés par la fct de cpt des symboles
                 cpt_lig+=cptSymbole(position, tab[lig][col+1]);}
-            if(position==SYMB_P1 || position == SYMB_P2){
+            if(position==SYMB_P1 || position == SYMB_P2){//si le symbole sur l'emplacement actu correspond au symbole du joueur 1 ou du joueur 2 alors:
                 int cpt=1;
                 int count_diag_dr=1;
                 int count_diag_ga=1;
-                while (tab[lig-cpt][col]==SYMB_P1||tab[lig-cpt][col]==SYMB_P2){
-                    cpt_col+= cptSymbole(position,tab[lig-cpt][col]);
+                while (tab[lig-cpt][col]==SYMB_P1||tab[lig-cpt][col]==SYMB_P2){// tant que le symbole de la lig supérieure correspond au symbole du j1 ou du j2
+                    cpt_col+= cptSymbole(position,tab[lig-cpt][col]);// on incrémente le compteur de symbole consécutif de la col
                     cpt++;
                 }
-
-                while(tab[lig-count_diag_dr][col+count_diag_dr]==SYMB_P1 || tab[lig-count_diag_dr][col+count_diag_dr]==SYMB_P2){
+                while(tab[lig-count_diag_dr][col+count_diag_dr]==SYMB_P1 || tab[lig-count_diag_dr][col+count_diag_dr]==SYMB_P2){// tant que le symbole de la diag supérieure droite correspond au symbole du j1 ou du j2
                     cpt_diag_dr+= cptSymbole(position,tab[lig-count_diag_dr][col+count_diag_dr]);
-                    count_diag_dr++;
+                    count_diag_dr++;// on incrémente le compteur de symbole consécutif de la diag droite
                 }
-                while(tab[lig-count_diag_ga][col-count_diag_ga]==SYMB_P1 || tab[lig-count_diag_ga][col-count_diag_ga]==SYMB_P2){
-                    cpt_diag_ga+= cptSymbole(position,tab[lig-count_diag_ga][col-count_diag_ga]);
+                while(tab[lig-count_diag_ga][col-count_diag_ga]==SYMB_P1 || tab[lig-count_diag_ga][col-count_diag_ga]==SYMB_P2){// tant que le symbole de la diag supérieure gauche correspond au symbole du j1 ou du j2
+                    cpt_diag_ga+= cptSymbole(position,tab[lig-count_diag_ga][col-count_diag_ga]);// on incrémente le compteur de symbole consécutif de la diag gauche
                     count_diag_ga++;
                 }
             }
-            if(cpt_lig==PUISSANCES||cpt_col==PUISSANCES||cpt_diag_dr==PUISSANCES||cpt_diag_ga==PUISSANCES){
+            if(cpt_lig==PUISSANCES||cpt_col==PUISSANCES||cpt_diag_dr==PUISSANCES||cpt_diag_ga==PUISSANCES){//si l'un des compteurs consécutifs correspond à la puissance alors on retourne 1
                 return 1;
             }
-            if(cptSymbole_IA(typePartie,cpt_lig,tab,SYMB_P2,lig,col+PUISSANCES-1)==1){
+            if(cptSymbole_IA(typePartie,cpt_lig,tab,SYMB_P2,lig,col+PUISSANCES-1)==1){//si l'un des compteurs consécutifs de la lig correspond à la puissance-1 alors on retourne 2
                 return 2;
             }
-            if(cptSymbole_IA(typePartie,cpt_col,tab,SYMB_P2,lig-PUISSANCES+1,col)==1){
+            if(cptSymbole_IA(typePartie,cpt_col,tab,SYMB_P2,lig-PUISSANCES+1,col)==1){//si l'un des compteurs consécutifs de la col correspond à la puissance-1 alors on retourne 2
                 return 2;
-            }
+            }//on réinitialise les compteurs de la verticale et des diagonales dans le cas ou il n'y a pas de symbole consécutifs
             cpt_col=1;
             cpt_diag_dr=1;
             cpt_diag_ga=1;
-        }
+        }// on réinitialise le compteur horizontal lorsqu'on fini toutes les col (lorsqu'on arrive au bord de droite) et le compteur vertical lorsqu'on change de lig
         cpt_lig=0;
         cpt_col=0;
     }
