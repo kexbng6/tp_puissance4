@@ -2,16 +2,20 @@
 #include <stdlib.h>
 #include <time.h>
 
-const int LIGNES = 6/*7 pour les numéros de colonnes*/;
+const int LIGNES = 7 /*pour les numéros de colonnes*/;
 const int COLONNES = 7;
 const int PUISSANCES = 4;
 const char CASE_VIDE = '.';
 const char SYMB_P1 = 'X';
 const char SYMB_P2 = 'O';
 
+
+/// @brief creation de la grille
+/// \param cara = caractère utilisé pour les cases vides
+/// \param tabMorp = tableau 2 dimensions
 void creerGrille(char cara, char tabMorp[LIGNES][COLONNES]){
     int i, j;
-    int numCol=1;
+    char numCol='1';
     for (i=0; i < LIGNES; i++)
     {
         for (j=0; j < COLONNES; j++)
@@ -19,18 +23,16 @@ void creerGrille(char cara, char tabMorp[LIGNES][COLONNES]){
                 tabMorp[i][j] = cara;
             }
     }
-/* numéro des colonnes   for(int lig=0;lig<1;lig++){
-        for (int col = 0; col < COLONNES+1; col++)
-        {
-            if(lig=0){
-                char numero = numCol;
-                tabMorp[lig][col]=numero;
-                numCol++;
-            }
+/* numéro des colonnes */
+for(int lig=0;lig<1;lig++){
+        for (int col = 0; col < COLONNES; col++){
+                tabMorp[lig][col]=numCol++;
         }
-    }*/
+    }
 }
 
+/// @brief affichage de la grille
+/// \param grille tableau 2 dimensions
 void affichage(char grille[LIGNES][COLONNES]){
     int i, j;
     for (i=0; i<LIGNES; i++)
@@ -39,8 +41,12 @@ void affichage(char grille[LIGNES][COLONNES]){
             putchar(grille[i][j]);
         putchar('\n');
     }
-}   
+}
 
+/// @brief permet de 'poser' sur la grille un caractere en fonction du joueur
+/// \param inputUser = position du caractere avec le n°de colonne
+/// \param coord = symbole du joueur
+/// \param grille = tableau 2 dimensions
 void posCoord(int inputUser, char coord, char grille[LIGNES][COLONNES]){
     int cpt=0;
     for(int x = 0; x<LIGNES;x++){
@@ -70,6 +76,10 @@ void posCoord(int inputUser, char coord, char grille[LIGNES][COLONNES]){
     affichage(grille);
 }
 
+/// @brief permet de compter un nombre de symbole si celui de la case suivante est le même
+/// \param posActu = position actuelle du caractere dans le tableau 2 dimensions
+/// \param next = symbole de la case suivante
+/// @return un compteur representant le nombre de symbole consécutif
 int cptSymbole(char posActu, char next){
     int cpt = 0;
     if(posActu == SYMB_P1 || posActu == SYMB_P2){
@@ -80,6 +90,14 @@ int cptSymbole(char posActu, char next){
     return cpt;
 }
 
+/// @brief permet de compter un nombre de symbole dans la variante IA du jeu
+/// \param typePartie = le type de partie (1=joueur contre joueur, 2=joueur contre ordinateur random, 3=joueur contre ordinateur IA)
+/// \param cpt = compteur de nombre de symbole consécutif
+/// \param tab = tableau 2 dimensions
+/// \param next = symbole de la case suivante
+/// \param lig = ligne du symbole suivant
+/// \param col = colonne du symbole suivant
+/// @return 1 si la partie est dans la variante IA du jeu et que le compteur affiche la puissance-1, sinon retourne 0
 int cptSymbole_IA(int typePartie, int cpt, char tab[LIGNES][COLONNES], char next, int lig, int col){
     if (typePartie == 3 && cpt == PUISSANCES - 1) {
         tab[lig][col] = next;
@@ -88,6 +106,10 @@ int cptSymbole_IA(int typePartie, int cpt, char tab[LIGNES][COLONNES], char next
     return 0;
 }
 
+/// @brief permet de verifier la victoire d'un joueur en fonction de la puissance du jeu
+/// \param tab = tableau 2 dimensions
+/// \param typePartie = le type de partie (1=joueur contre joueur, 2=joueur contre ordinateur random, 3=joueur contre ordinateur IA)
+/// @return 1 si l'un des compteurs est égal à la puissance du jeu, 2 si la partie est dans la variante IA avec un compteur à puissance-1, 0 s'il n'y a pas de victoire
 int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
     int cpt_lig=1;
     int cpt_col=1;
@@ -122,10 +144,10 @@ int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
             if(cpt_lig==PUISSANCES||cpt_col==PUISSANCES||cpt_diag_dr==PUISSANCES||cpt_diag_ga==PUISSANCES){
                 return 1;
             }
-            if(cptSymbole_IA(3,cpt_lig,tab,SYMB_P2,lig,col+PUISSANCES-1)==1){
+            if(cptSymbole_IA(typePartie,cpt_lig,tab,SYMB_P2,lig,col+PUISSANCES-1)==1){
                 return 2;
             }
-            if(cptSymbole_IA(3,cpt_col,tab,SYMB_P2,lig-PUISSANCES+1,col)==1){
+            if(cptSymbole_IA(typePartie,cpt_col,tab,SYMB_P2,lig-PUISSANCES+1,col)==1){
                 return 2;
             }
             cpt_col=1;
@@ -138,6 +160,8 @@ int checkIfWin(char tab[LIGNES][COLONNES], int typePartie){
     return 0;
 }
 
+/// @brief choix du type de partie en fonction de l'input de l'utilisateur
+/// @return choix de l'utilisateur, le type de partie (1=joueur contre joueur, 2=joueur contre ordinateur random, 3=joueur contre ordinateur IA)
 int choixPartie(){
     int choixUser;
     printf("Welcome into HEPuIssAnce_4\n Quelle partie souhaitez-vous jouez ?\n------------------------------\n");
@@ -147,6 +171,10 @@ int choixPartie(){
     return choixUser;
 }
 
+/// @brief permet de confirmer la victoire d'un joueur avec un message de félicitation
+/// \param numJoueur = numero du joueur
+/// \param win = 1 s'il y a une victoire
+/// @return 1 s'il y a une victoire, 0 s'il n'y a pas de victoire
 int winner(char numJoueur, int win){
     if (win == 1){
         printf("Félicitation joueur %c vous remportez la partie !!!", numJoueur);
@@ -155,6 +183,8 @@ int winner(char numJoueur, int win){
     return 0;
 }
 
+/// @brief fonction du déroulement de la partie dans la variante joueur contre joueur
+/// \param tab = tableau 2 dimensions
 void gameStart_P2P(char tab[LIGNES][COLONNES]){
     int inputUser;
     while(checkIfWin(tab,1)==0){
@@ -172,6 +202,8 @@ void gameStart_P2P(char tab[LIGNES][COLONNES]){
     }
 }
 
+/// @brief fonction du déroulement de la partie dans la variante joueur contre ordinateur(random)
+/// \param tab = tableau 2 dimensions
 void gameStart_PvC_v1(char tab[LIGNES][COLONNES]){
     int inputUser;
     srand(time(0));// initialisation de la graine avec l'identifiant du processus
@@ -191,6 +223,8 @@ void gameStart_PvC_v1(char tab[LIGNES][COLONNES]){
     }
 }
 
+/// @brief fonction du déroulement de la partie dans la variante joueur contre ordinateur(IA)
+/// \param tab = tableau 2 dimensions
 void gameStart_PvC_v2(char tab[LIGNES][COLONNES]){
     int inputUser;
     srand(time(0));// initialisation de la graine avec l'identifiant du processus
@@ -210,12 +244,14 @@ void gameStart_PvC_v2(char tab[LIGNES][COLONNES]){
         else if (checkIfWin(tab,3)== 1){
             break;
         } else if (checkIfWin(tab,3)==2){
-            printf("blocage de jeu\n");
+            printf("Tentative de blocage IA\n");
         }
         printf("Dans quelle colonne souhaitez vous jouer player 1?\n");
     }
 }
 
+/// @brief fonction orientant sur le type de partie
+/// \param tab = tableau 2 dimensions
 void gameStart(char tab[LIGNES][COLONNES]){
     int choix=choixPartie();
     if(choix == 1){
